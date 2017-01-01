@@ -13,6 +13,8 @@ var signalingChannel = new WebSocket(`wss://skyway.io/peerjs?key=${apiKey}&id=${
 navigator.mediaDevices.getUserMedia({ video: true })
     .then(stream => {
         myVideo.srcObject = stream;
+        step1Container.style.display = step3Container.style.display = 'none';
+        step2Container.style.display = 'block';
     })
     .catch(logError);
 
