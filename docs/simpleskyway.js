@@ -155,10 +155,7 @@ signalingChannelOnMessage = evt => {
                     var str = JSON.stringify({
                         type: 'ANSWER',
                         payload: {
-                            sdp: {
-                                type: 'answer',
-                                sdp: pc.localDescription.sdp
-                            },
+                            sdp: pc.localDescription,
                             //type: connection.type,
                             //connectionId: connection.id,
                             browser: 'Chrome' //util.browser
