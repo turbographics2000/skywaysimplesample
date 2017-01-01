@@ -11,23 +11,23 @@ var pc = null;
 var signalingChannel = null;
 fetch(`https://skyway.io/${apiKey}/id?ts=${Date.now() + '' + Math.random()}`).then(res => {
     res.text().then(text => {
-        console.log(text);
+        myUserId = text;
+        signalingChannel = new WebSocket(`wss://skyway.io/peerjs?key=${apiKey}&id=${myUserId}&token=${token}`);
+        signalingChannel.onerror = evt => {
+            console.log('signalingChannel error', evt);
+        };
+        // get a local stream, show it in a self-view and add it to be sent
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                myVideo.srcObject = stream;
+                myId.textContent = myUserId;
+                step1Container.style.display = step3Container.style.display = 'none';
+                step2Container.style.display = 'block';
+            })
+            .catch(logError);
     });
 });
-// = new WebSocket(`wss://skyway.io/peerjs?key=${apiKey}&id=${myUserId}&token=${token}`);
-signalingChannel.onerror = function() {
 
-}
-
-// get a local stream, show it in a self-view and add it to be sent
-navigator.mediaDevices.getUserMedia({ video: true })
-    .then(stream => {
-        myVideo.srcObject = stream;
-        myId.textContent = myUserId;
-        step1Container.style.display = step3Container.style.display = 'none';
-        step2Container.style.display = 'block';
-    })
-    .catch(logError);
 
 function start() {
     pc = new RTCPeerConnection(configuration);
