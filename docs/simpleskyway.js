@@ -42,7 +42,7 @@ function start() {
             signalingChannel.send(JSON.stringify({
                 type: 'CANDIDATE',
                 payload: {
-                    candidate: candidate,
+                    candidate: evt.candidate,
                     //type: connection.type,
                     //connectionId: connection.id
                 },
@@ -63,7 +63,7 @@ function start() {
                     payload: {
                         sdp: pc.localDescription,
                         //type: connection.type,
-                        connectionId: connection.id,
+                        //connectionId: connection.id,
                         //reliable: connection.reliable,
                         serialization: 'binary',
                         browser: 'Chrome' //util.browser
@@ -91,9 +91,6 @@ makeCall.onclick = start;
 
 
 signalingChannelOnMessage = evt => {
-    if (!pc)
-        start();
-
     var message = JSON.parse(evt.data);
     if (message.type) {
         var payload = message.payload;
@@ -133,6 +130,8 @@ signalingChannelOnMessage = evt => {
                 console.log('peer-unavailable', 'Could not connect to peer ' + peer);
                 break;
             case 'OFFER': // we should consider switching this to CALL/CONNECT, but this is the least breaking option.
+                if (!pc)
+                    start();
                 // Create a new connection.
                 pc.setRemoteDescription(message.sdp).then(_ => {
                     return pc.createAnswer();
@@ -180,6 +179,8 @@ signalingChannelOnMessage = evt => {
                 break;
         }
     } else if (message.desc) {
+
+
         var desc = message.desc;
 
         // if we get an offer, we need to reply with an answer
