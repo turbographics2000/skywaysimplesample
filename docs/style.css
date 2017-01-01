@@ -12,6 +12,10 @@ body {
     width: 60%;
 }
 
+input {
+    font-size: 12.8px;
+}
+
 .green-button,
 .red-button {
     font-size: 100%;
