@@ -24,7 +24,7 @@
             <h2>PeerJS Video Chat</h2>
 
             <!-- Get local audio/video stream -->
-            <div id="step1">
+            <div id="step1Container">
                 <p>Please click `allow` on the top of the screen so we can access your webcam and microphone for calls.</p>
                 <div id="step1Error">
                     <p>Failed to access the webcam and microphone. Make sure to run this demo on an http server and click allow when asked for permission by the browser.</p>
@@ -33,7 +33,7 @@
             </div>
 
             <!-- Make calls to others -->
-            <div id="step2">
+            <div id="step2Container">
                 <p>Your id: <span id="myId">...</span></p>
                 <p>Share this id with others so they can call you.</p>
                 <h3>Make a call</h3>
@@ -44,8 +44,8 @@
             </div>
 
             <!-- Call in progress -->
-            <div id="step3">
-                <p>Currently in call with <span id="their-id">...</span></p>
+            <div id="step3Container">
+                <p>Currently in call with <span id="theirId">...</span></p>
                 <p><a href="#" class="pure-button pure-button-error" id="endCall">End call</a></p>
             </div>
         </div>
@@ -108,8 +108,8 @@
         }
 
         function step2() {
-            step1.style.display = step3.style.display = 'none';
-            step2.style.display = '';
+            step1Container.style.display = step3Container.style.display = 'none';
+            step2Container.style.display = 'block';
         }
 
         function step3(call) {
@@ -125,8 +125,8 @@
             existingCall = call;
             theirId.textContent = call.peer;
             call.on('close', step2);
-            step1.style.display = step2.style.display = 'none';
-            step3.style.display = '';
+            step1Container.style.display = step2Container.style.display = 'none';
+            step3Container.style.display = 'block';
         }
     </script>
 
