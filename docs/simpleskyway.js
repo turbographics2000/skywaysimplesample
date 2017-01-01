@@ -16,7 +16,7 @@ navigator.mediaDevices.getUserMedia({ video: true })
     .catch(logError);
 
 
-function start() {
+makeCall.onclick = evt => {
     pc = new RTCPeerConnection(configuration);
 
     // send any ice candidates to the other peer
