@@ -15,6 +15,9 @@ fetch(`https://skyway.io/${apiKey}/id?ts=${Date.now() + '' + Math.random()}`).th
         myUserId = text;
         signalingChannel = new WebSocket(`wss://skyway.io/peerjs?key=${apiKey}&id=${myUserId}&token=${token}`);
         signalingChannel.onmessage = signalingChannelOnMessage;
+        signalingChannel.onclose = evt => {
+            console.log('signalingChannel close', evt);
+        };
         signalingChannel.onerror = evt => {
             console.log('signalingChannel error', evt);
         };
