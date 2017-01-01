@@ -81,7 +81,7 @@ function start() {
     // once remote video track arrives, show it in the remote video element
     pc.ontrack = evt => {
         if (evt.track.kind === 'video')
-            remoteView.srcObject = evt.streams[0];
+            theirVideo.srcObject = evt.streams[0];
     };
 
     if (pc.addTrack) {
