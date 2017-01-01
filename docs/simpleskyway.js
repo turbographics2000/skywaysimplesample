@@ -220,7 +220,7 @@ signalingChannelOnMessage = evt => {
             log('Unsupported SDP type. Your code may differ here.');
         }
     } else {
-        console.log('unknowm message');
+        console.log('unknowm message', message);
         //pc.addIceCandidate(message.candidate).catch(logError);
     }
 };
