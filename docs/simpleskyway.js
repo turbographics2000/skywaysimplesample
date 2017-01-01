@@ -20,8 +20,7 @@ navigator.mediaDevices.getUserMedia({ video: true })
     })
     .catch(logError);
 
-
-makeCall.onclick = evt => {
+function start() {
     pc = new RTCPeerConnection(configuration);
 
     // send any ice candidates to the other peer
@@ -54,6 +53,8 @@ makeCall.onclick = evt => {
         pc.addStream(myVideo.srcObject);
     }
 }
+makeCall.onclick = start;
+
 
 signalingChannel.onmessage = evt => {
     if (!pc)
