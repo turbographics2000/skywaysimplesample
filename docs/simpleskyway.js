@@ -138,7 +138,7 @@ signalingChannelOnMessage = evt => {
                 if (!pc)
                     start();
                 // Create a new connection.
-                pc.setRemoteDescription(message.sdp).then(_ => {
+                pc.setRemoteDescription(message.payload.sdp).then(_ => {
                     return pc.createAnswer();
                 }).then(answer => {
                     return pc.setLocalDescription(answer);
@@ -158,7 +158,7 @@ signalingChannelOnMessage = evt => {
                 break;
             case 'ANSWER':
                 // Forward to negotiator
-                pc.setRemoteDescription(message.sdp).catch(logError);
+                pc.setRemoteDescription(message.payload.sdp).catch(logError);
                 break;
             case 'CANDIDATE':
                 console.log('candidate', message.payload.candidate);
