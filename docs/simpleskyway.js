@@ -115,6 +115,7 @@ signalingChannelOnMessage = evt => {
                 console.log('invalid-key', `API KEY "${this.options.key}" is invalid`);
                 break;
             case 'PING':
+                console.log('PING');
                 signalingChannel.send(JSON.stringify({ type: 'PONG' }));
                 break;
             case 'LEAVE': // Another peer has closed its connection to this peer.
