@@ -12,7 +12,7 @@ var dstPeerId = null;
 var signalingChannel = null;
 fetch(`https://skyway.io/${apiKey}/id?ts=${Date.now() + '' + Math.random()}`).then(res => {
     res.text().then(text => {
-        myUserId = text;
+        //myUserId = text;
         signalingChannel = new WebSocket(`wss://skyway.io/peerjs?key=${apiKey}&id=${myUserId}&token=${token}`);
         signalingChannel.onmessage = signalingChannelOnMessage;
         signalingChannel.onclose = evt => {
@@ -196,45 +196,6 @@ signalingChannelOnMessage = evt => {
                 // }
                 break;
         }
-    } else if (message.desc) {
-
-
-        var desc = message.desc;
-
-        // if we get an offer, we need to reply with an answer
-        if (desc.type === 'offer') {
-            pc.setRemoteDescription(desc).then(_ => {
-                    return pc.createAnswer();
-                })
-                .then(answer => {
-                    return pc.setLocalDescription(answer);
-                })
-                .then(_ => {
-                    var str = JSON.stringify({
-                        type: 'ANSWER',
-                        sdp: pc.localDescription,
-                        // payload: {
-                        //     sdp: {
-                        //         type: 'answer',
-                        //         sdp: answer.sdp
-                        //     },
-                        //     type: connection.type,
-                        //     //connectionId: connection.id,
-                        //     browser: 'Chrome' //util.browser
-                        // },
-                        dst: dstPeerId
-                    });
-                    signalingChannel.send(str);
-                })
-                .catch(logError);
-        } else if (desc.type === 'answer') {
-            pc.setRemoteDescription(desc).catch(logError);
-        } else {
-            log('Unsupported SDP type. Your code may differ here.');
-        }
-    } else {
-        console.log('unknowm message', message);
-        //pc.addIceCandidate(message.candidate).catch(logError);
     }
 };
 
