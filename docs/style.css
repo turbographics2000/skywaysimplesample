@@ -1,3 +1,7 @@
+body {
+    font-family: sans-serif;
+}
+
 .pure-u-1-3,
 .pure-u-2-3 {
     display: inline-block;
@@ -6,6 +10,24 @@
 
 .pure-u-2-3 {
     width: 60%;
+}
+
+.green-button,
+.red-button {
+    font-size: 100%;
+    padding: .5em 1.5em;
+    color: white;
+    border-radius: 4px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    transition: .1s linear box-shadow;
+}
+
+.green-button {
+    background: rgb(28, 184, 65);
+}
+
+.red-button {
+    background: rgb(202, 60, 60);
 }
 
 #myVideo {
