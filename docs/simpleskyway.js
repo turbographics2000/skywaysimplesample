@@ -9,9 +9,9 @@ var configuration = {
 var pc = null;
 
 var signalingChannel = null;
-fetch(`https://skyway.io/${apiKey}/id?ts=${Date.now() + '' + Math.random()}`).then(response => {
+fetch(`https://skyway.io/${apiKey}/id?ts=${Date.now() + '' + Math.random()}`).then(res => {
     res.text().then(text => {
-        console.log(response.to);
+        console.log(text);
     });
 });
 // = new WebSocket(`wss://skyway.io/peerjs?key=${apiKey}&id=${myUserId}&token=${token}`);
