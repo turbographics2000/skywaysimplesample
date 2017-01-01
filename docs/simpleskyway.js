@@ -45,11 +45,12 @@ function start() {
             console.log('candidate', evt.candidate);
             signalingChannel.send(JSON.stringify({
                 type: 'CANDIDATE',
-                payload: {
-                    candidate: evt.candidate,
-                    //type: connection.type,
-                    //connectionId: connection.id
-                },
+                candidate: evt.candidate,
+                // payload: {
+                //     candidate: evt.candidate,
+                //     //type: connection.type,
+                //     //connectionId: connection.id
+                // },
                 dst: dstPeerId
             }));
         }
@@ -64,14 +65,15 @@ function start() {
                 // send the offer to the other peer
                 signalingChannel.send(JSON.stringify({
                     type: 'OFFER',
-                    payload: {
-                        sdp: pc.localDescription,
-                        //type: connection.type,
-                        //connectionId: connection.id,
-                        //reliable: connection.reliable,
-                        serialization: 'binary',
-                        browser: 'Chrome' //util.browser
-                    },
+                    sdp: pc.localDescription,
+                    // payload: {
+                    //     sdp: pc.localDescription,
+                    //     //type: connection.type,
+                    //     //connectionId: connection.id,
+                    //     //reliable: connection.reliable,
+                    //     serialization: 'binary',
+                    //     browser: 'Chrome' //util.browser
+                    // },
                     dst: dstPeerId
                 }));
             })
@@ -147,19 +149,20 @@ signalingChannelOnMessage = evt => {
                 }
 
                 // Create a new connection.
-                pc.setRemoteDescription(message.payload.sdp).then(_ => {
+                pc.setRemoteDescription(message.sdp).then(_ => {
                     return pc.createAnswer();
                 }).then(answer => {
                     return pc.setLocalDescription(answer);
                 }).then(_ => {
                     var str = JSON.stringify({
                         type: 'ANSWER',
-                        payload: {
-                            sdp: pc.localDescription,
-                            //type: connection.type,
-                            //connectionId: connection.id,
-                            browser: 'Chrome' //util.browser
-                        },
+                        sdp: pc.localDescription,
+                        // payload: {
+                        //     sdp: pc.localDescription,
+                        //     //type: connection.type,
+                        //     //connectionId: connection.id,
+                        //     browser: 'Chrome' //util.browser
+                        // },
                         dst: dstPeerId
                     });
                     signalingChannel.send(str);
@@ -167,11 +170,11 @@ signalingChannelOnMessage = evt => {
                 break;
             case 'ANSWER':
                 // Forward to negotiator
-                pc.setRemoteDescription(message.payload.sdp).catch(logError);
+                pc.setRemoteDescription(message.sdp).catch(logError);
                 break;
             case 'CANDIDATE':
-                console.log('candidate', message.payload.candidate);
-                pc.addIceCandidate(message.payload.candidate);
+                console.log('candidate', message.candidate);
+                pc.addIceCandidate(message.candidate);
                 break;
             default:
                 // if (!payload) {
@@ -209,16 +212,17 @@ signalingChannelOnMessage = evt => {
                 .then(_ => {
                     var str = JSON.stringify({
                         type: 'ANSWER',
-                        payload: {
-                            sdp: {
-                                type: 'answer',
-                                sdp: answer.sdp
-                            },
-                            type: connection.type,
-                            //connectionId: connection.id,
-                            browser: 'Chrome' //util.browser
-                        },
-                        dst: connection.peer
+                        sdp: pc.localDescription,
+                        // payload: {
+                        //     sdp: {
+                        //         type: 'answer',
+                        //         sdp: answer.sdp
+                        //     },
+                        //     type: connection.type,
+                        //     //connectionId: connection.id,
+                        //     browser: 'Chrome' //util.browser
+                        // },
+                        dst: dstPeerId
                     });
                     signalingChannel.send(str);
                 })
