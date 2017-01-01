@@ -141,11 +141,6 @@ signalingChannelOnMessage = evt => {
                 console.log('peer-unavailable', 'Could not connect to peer ' + peer);
                 break;
             case 'OFFER': // we should consider switching this to CALL/CONNECT, but this is the least breaking option.
-                if (!pc) {
-                    start();
-                    dstPeerId = message.src;
-                }
-
                 // Create a new connection.
                 pc.setRemoteDescription(message.payload.sdp).then(_ => {
                     return pc.createAnswer();
@@ -170,6 +165,11 @@ signalingChannelOnMessage = evt => {
                 pc.setRemoteDescription(message.payload.sdp).catch(logError);
                 break;
             case 'CANDIDATE':
+                if (!pc) {
+                    start();
+                    dstPeerId = message.src;
+                }
+
                 console.log('candidate', message.payload.candidate);
                 pc.addIceCandidate(message.payload.candidate);
                 break;
