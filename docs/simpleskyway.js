@@ -42,6 +42,7 @@ function start() {
     // send any ice candidates to the other peer
     pc.onicecandidate = evt => {
         if (evt.candidate) {
+            console.log('candidate', evt.candidate);
             signalingChannel.send(JSON.stringify({
                 type: 'CANDIDATE',
                 payload: {
@@ -160,6 +161,7 @@ signalingChannelOnMessage = evt => {
                 pc.setRemoteDescription(message.sdp).catch(logError);
                 break;
             case 'CANDIDATE':
+                console.log('candidate', message.payload.candidate);
                 pc.addIceCandidate(message.payload.candidate);
                 break;
             default:
