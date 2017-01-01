@@ -7,6 +7,7 @@ var configuration = {
     }]
 };
 var pc = null;
+var dstPeerId = null;
 
 var signalingChannel = null;
 fetch(`https://skyway.io/${apiKey}/id?ts=${Date.now() + '' + Math.random()}`).then(res => {
@@ -31,11 +32,23 @@ fetch(`https://skyway.io/${apiKey}/id?ts=${Date.now() + '' + Math.random()}`).th
 
 
 function start() {
+    dstPeerId = callToId.value;
+
     pc = new RTCPeerConnection(configuration);
 
     // send any ice candidates to the other peer
     pc.onicecandidate = evt => {
-        signalingChannel.send(JSON.stringify({ candidate: evt.candidate }));
+        if (evt.candidate) {
+            signalingChannel.send(JSON.stringify({
+                type: 'CANDIDATE',
+                payload: {
+                    candidate: candidate,
+                    //type: connection.type,
+                    //connectionId: connection.id
+                },
+                dst: dstPeerId
+            }));
+        }
     };
 
     // let the "negotiationneeded" event trigger offer generation
@@ -45,7 +58,18 @@ function start() {
             })
             .then(_ => {
                 // send the offer to the other peer
-                signalingChannel.send(JSON.stringify({ 'desc': pc.localDescription }));
+                signalingChannel.send(JSON.stringify({
+                    type: 'OFFER',
+                    payload: {
+                        sdp: pc.localDescription,
+                        //type: connection.type,
+                        connectionId: connection.id,
+                        //reliable: connection.reliable,
+                        serialization: 'binary',
+                        browser: 'Chrome' //util.browser
+                    },
+                    dst: dstPeerId
+                }));
             })
             .catch(logError);
     };
@@ -91,79 +115,71 @@ signalingChannelOnMessage = evt => {
                 console.log('invalid-key', `API KEY "${this.options.key}" is invalid`);
                 break;
             case 'PING':
-                this.socket.sendPong();
+                signalingChannel.send(JSON.stringify({ type: 'PONG' }));
                 break;
             case 'LEAVE': // Another peer has closed its connection to this peer.
                 console.log('Received leave message from', peer);
-                this._cleanupPeer(peer);
+                //this._cleanupPeer(peer);
+
+                // var connections = this.connections[peer];
+                // for (var j = 0, jj = connections.length; j < jj; j += 1) {
+                //     connections[j].close();
+                // }
+
                 break;
 
             case 'EXPIRE': // The offer sent to a peer has expired without response.
-                this.emitError('peer-unavailable', 'Could not connect to peer ' + peer);
+                //this.emitError('peer-unavailable', 'Could not connect to peer ' + peer);
+                console.log('peer-unavailable', 'Could not connect to peer ' + peer);
                 break;
             case 'OFFER': // we should consider switching this to CALL/CONNECT, but this is the least breaking option.
-                var connectionId = payload.connectionId;
-                connection = this.getConnection(peer, connectionId);
-
-                if (connection) {
-                    console.warn('Offer received for existing Connection ID:', connectionId);
-                    //connection.handleMessage(message);
-                } else {
-                    // Create a new connection.
-                    if (payload.type === 'media') {
-                        connection = new MediaConnection(peer, this, {
-                            connectionId: connectionId,
-                            _payload: payload,
-                            metadata: payload.metadata
-                        });
-                        util.log("MediaConnection created in OFFER");
-                        this._addConnection(peer, connection);
-                        this.emit('call', connection);
-                    } else if (payload.type === 'data') {
-                        connection = new DataConnection(peer, this, {
-                            connectionId: connectionId,
-                            _payload: payload,
-                            metadata: payload.metadata,
-                            label: payload.label,
-                            serialization: payload.serialization,
-                            reliable: payload.reliable
-                        });
-                        this._addConnection(peer, connection);
-                        this.emit('connection', connection);
-                    } else {
-                        util.warn('Received malformed connection type:', payload.type);
-                        return;
-                    }
-                    // Find messages.
-                    var messages = this._getMessages(connectionId);
-                    for (var i = 0, ii = messages.length; i < ii; i += 1) {
-                        connection.handleMessage(messages[i]);
-                    }
-                }
+                // Create a new connection.
+                pc.setRemoteDescription(message.sdp).then(_ => {
+                    return pc.createAnswer();
+                }).then(answer => {
+                    return pc.setLocalDescription(answer);
+                }).then(_ => {
+                    var str = JSON.stringify({
+                        type: 'ANSWER',
+                        payload: {
+                            sdp: pc.localDescription,
+                            //type: connection.type,
+                            //connectionId: connection.id,
+                            browser: 'Chrome' //util.browser
+                        },
+                        dst: dstPeerId
+                    });
+                    signalingChannel.send(str);
+                }).catch(logError);
+                break;
+            case 'ANSWER':
+                // Forward to negotiator
+                pc.setRemoteDescription(message.sdp).catch(logError);
+                break;
+            case 'CANDIDATE':
+                pc.addIceCandidate(message.payload.candidate);
                 break;
             default:
-                if (!payload) {
-                    console.warn('You received a malformed message from ' + peer + ' of type ' + type);
-                    return;
-                }
+                // if (!payload) {
+                //     console.warn('You received a malformed message from ' + peer + ' of type ' + type);
+                //     return;
+                // }
 
-                var id = payload.connectionId;
-                connection = this.getConnection(peer, id);
+                // var id = payload.connectionId;
+                // connection = this.getConnection(peer, id);
 
-                if (connection && connection.pc) {
-                    // Pass it on.
-                    connection.handleMessage(message);
-                } else if (id) {
-                    // Store for possible later use
-                    this._storeMessage(id, message);
-                } else {
-                    console.warn('You received an unrecognized message:', message);
-                }
+                // if (connection && connection.pc) {
+                //     // Pass it on.
+                //     connection.handleMessage(message);
+                // } else if (id) {
+                //     // Store for possible later use
+                //     this._storeMessage(id, message);
+                // } else {
+                //     console.warn('You received an unrecognized message:', message);
+                // }
                 break;
         }
-    }
-
-    if (message.desc) {
+    } else if (message.desc) {
         var desc = message.desc;
 
         // if we get an offer, we need to reply with an answer
@@ -175,7 +191,19 @@ signalingChannelOnMessage = evt => {
                     return pc.setLocalDescription(answer);
                 })
                 .then(_ => {
-                    var str = JSON.stringify({ desc: pc.localDescription });
+                    var str = JSON.stringify({
+                        type: 'ANSWER',
+                        payload: {
+                            sdp: {
+                                type: 'answer',
+                                sdp: answer.sdp
+                            },
+                            type: connection.type,
+                            //connectionId: connection.id,
+                            browser: 'Chrome' //util.browser
+                        },
+                        dst: connection.peer
+                    });
                     signalingChannel.send(str);
                 })
                 .catch(logError);
