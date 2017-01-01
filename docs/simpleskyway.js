@@ -8,7 +8,14 @@ var configuration = {
 };
 var pc = null;
 
-var signalingChannel = new WebSocket(`wss://skyway.io/peerjs?key=${apiKey}&id=${myUserId}&token=${token}`);
+var signalingChannel = null;
+fetch(`https://skyway.io/${apiKey}/id?ts=${Date.now() + '' + Math.random()}`).then(response => {
+    console.log(response);
+});
+// = new WebSocket(`wss://skyway.io/peerjs?key=${apiKey}&id=${myUserId}&token=${token}`);
+signalingChannel.onerror = function() {
+
+}
 
 // get a local stream, show it in a self-view and add it to be sent
 navigator.mediaDevices.getUserMedia({ video: true })
