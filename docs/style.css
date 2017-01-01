@@ -1,0 +1,28 @@
+#myVideo {
+    margin-top: 15px;
+    width: 280px;
+    height: auto;
+    background-color: #eee;
+}
+
+#theirVideo {
+    width: 100%;
+    height: 75%;
+    max-height: 480px;
+    background-color: #eee;
+}
+
+#videoContainer {
+    padding: 25px;
+    text-align: center;
+}
+
+#step1Error,
+#step2,
+#step3 {
+    display: none;
+}
+
+#myId {
+    font-weight: bold;
+}
