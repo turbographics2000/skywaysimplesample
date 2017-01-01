@@ -94,5 +94,5 @@ signalingChannel.onmessage = evt => {
 };
 
 function logError(error) {
-    log(error.name + ': ' + error.message);
+    console.log(error.name + ': ' + error.message);
 }
