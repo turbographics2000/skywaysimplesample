@@ -152,10 +152,14 @@ signalingChannelOnMessage = evt => {
                 }).then(answer => {
                     return pc.setLocalDescription(answer);
                 }).then(_ => {
+
                     var str = JSON.stringify({
                         type: 'ANSWER',
                         payload: {
-                            sdp: pc.localDescription,
+                            sdp: {
+                                type: 'answer',
+                                sdp: pc.localDescription.sdp
+                            },
                             //type: connection.type,
                             //connectionId: connection.id,
                             browser: 'Chrome' //util.browser
