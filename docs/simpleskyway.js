@@ -152,7 +152,6 @@ signalingChannelOnMessage = evt => {
                 }).then(answer => {
                     return pc.setLocalDescription(answer);
                 }).then(_ => {
-
                     var str = JSON.stringify({
                         type: 'ANSWER',
                         payload: {
