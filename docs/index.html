@@ -95,16 +95,17 @@
         function step1() {
             // Get audio/video stream
             navigator.mediaDevices.getUserMedia({
-                audio: false,
-                video: true
-            }, stream => {
-                // Set your video displays
-                myVideo.srcObject = stream;
-                localStream = stream;
-                step2();
-            }, _ => {
-                step1Error.style.display = '';
-            });
+                    video: true
+                })
+                .then(, stream => {
+                    // Set your video displays
+                    myVideo.srcObject = stream;
+                    localStream = stream;
+                    step2();
+                })
+                .catch(_ => {
+                    step1Error.style.display = '';
+                });
         }
 
         function step2() {
