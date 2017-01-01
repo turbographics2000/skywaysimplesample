@@ -1,18 +1,20 @@
 var token = Math.random().toString(36).substr(2);
-var myId = (new MediaStream()).id;
+var myUserId = (new MediaStream()).id;
 var apiKey = '894abaae-ca60-4915-8107-d68c98c0aef1';
 var configuration = {
     iceServers: [{
         urls: 'stun:stun.skyway.io:3478'
     }]
 };
+var pc = null;
 
-var signalingChannel = new WebSocket(`wss://skyway.io/peerjs?key=${apiKey}&id=${myId}&token=${token}`);
+var signalingChannel = new WebSocket(`wss://skyway.io/peerjs?key=${apiKey}&id=${myUserId}&token=${token}`);
 
 // get a local stream, show it in a self-view and add it to be sent
 navigator.mediaDevices.getUserMedia({ video: true })
     .then(stream => {
         myVideo.srcObject = stream;
+        myId.textContent = myUserId;
         step1Container.style.display = step3Container.style.display = 'none';
         step2Container.style.display = 'block';
     })
