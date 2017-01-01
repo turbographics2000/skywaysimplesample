@@ -10,7 +10,9 @@ var pc = null;
 
 var signalingChannel = null;
 fetch(`https://skyway.io/${apiKey}/id?ts=${Date.now() + '' + Math.random()}`).then(response => {
-    console.log(response);
+    res.text().then(text => {
+        console.log(response.to);
+    });
 });
 // = new WebSocket(`wss://skyway.io/peerjs?key=${apiKey}&id=${myUserId}&token=${token}`);
 signalingChannel.onerror = function() {
