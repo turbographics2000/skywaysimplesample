@@ -167,6 +167,7 @@ signalingChannelOnMessage = evt => {
                 }
                 console.log('receive OFFER', message);
                 pc.setRemoteDescription(new RTCSessionDescription(message.payload.sdp)).then(_ => {
+                    console.log('create answer');
                     return pc.createAnswer();
                 }).then(answer => {
                     return pc.setLocalDescription(answer);
