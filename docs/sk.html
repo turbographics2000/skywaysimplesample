@@ -79,7 +79,8 @@
                 //$('#my-video').prop('src', URL.createObjectURL(stream));
                 window.localStream = stream;
                 step2();
-            }, function() {
+            }, function(e) {
+                console.error(e);
                 $('#step1-error').show();
             });
         }
