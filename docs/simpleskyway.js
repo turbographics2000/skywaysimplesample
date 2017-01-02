@@ -28,7 +28,7 @@ dllog.onclick = _ => {
     var blob = new Blob([jsonStr]);
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `log_${window['my-id'].textContent}.json`;
+    a.download = `log_${myId.textContent}.json`;
     if (window.chrome) {
         a.click();
     } else {
