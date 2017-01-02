@@ -7,22 +7,22 @@
         var logList = [];
 
         function addLog({
-            type,
-            url,
-            method,
-            streaming,
-            postData,
-            sendData,
-            receiveData
+            type = 'xhr',
+            url = '',
+            method = 'POST',
+            streaming = false,
+            postData = '',
+            sendData = '',
+            receiveData = ''
         }) {
             logList.push({
-                type: 'xhr',
-                url: '',
-                method: 'POST',
-                streaming: false,
-                postData: '',
-                sendData: '',
-                receiveData: '',
+                type,
+                url,
+                method,
+                streaming,
+                postData,
+                sendData,
+                receiveData,
                 dt: Date.now()
             });
         }
