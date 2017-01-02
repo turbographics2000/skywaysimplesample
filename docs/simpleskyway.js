@@ -166,7 +166,7 @@ signalingChannelOnMessage = evt => {
                     dstPeerId = message.src;
                 }
                 console.log('receive OFFER', message);
-                pc.setRemoteDescription(message.payload.sdp).then(_ => {
+                pc.setRemoteDescription(new RTCSessionDescription(message.payload.sdp)).then(_ => {
                     return pc.createAnswer();
                 }).then(answer => {
                     return pc.setLocalDescription(answer);
@@ -189,7 +189,7 @@ signalingChannelOnMessage = evt => {
                 break;
             case 'ANSWER':
                 console.log('receive ANSWER', message);
-                pc.setRemoteDescription(message.payload.sdp).catch(logError);
+                pc.setRemoteDescription(new RTCSessionDescription(message.payload.sdp)).catch(logError);
                 break;
             case 'CANDIDATE':
                 console.log('candidate', message.payload.candidate);
