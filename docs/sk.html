@@ -70,8 +70,8 @@
 
         function step1() {
             // Get audio/video stream
-            navigator.getUserMedia({
-                audio: true,
+            navigator.mediaDevices.getUserMedia({
+                audio: false,
                 video: true
             }, function(stream) {
                 // Set your video displays
