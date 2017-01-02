@@ -82,6 +82,7 @@ function start() {
             })
             .then(_ => {
                 // send the offer to the other peer
+                console.log('send OFFER', JSON.stringify(pc.localDescription));
                 signalingChannel.send(JSON.stringify({
                     type: 'OFFER',
                     payload: {
@@ -99,8 +100,7 @@ function start() {
                     },
                     dst: dstPeerId
                 }));
-            })
-            .catch(logError);
+            }).catch(logError);
     };
 
     // once remote video track arrives, show it in the remote video element
@@ -164,12 +164,13 @@ signalingChannelOnMessage = evt => {
                     start();
                     dstPeerId = message.src;
                 }
+                console.log('receive OFFER', JSON.stringify(message.payload.sdp));
                 pc.setRemoteDescription(message.payload.sdp).then(_ => {
                     return pc.createAnswer();
                 }).then(answer => {
                     return pc.setLocalDescription(answer);
                 }).then(_ => {
-                    console.log('ANSWER', pc.localDescription);
+                    console.log('send ANSWER', JSON.stringify(pc.localDescription));
                     var str = JSON.stringify({
                         type: 'ANSWER',
                         payload: {
@@ -186,6 +187,7 @@ signalingChannelOnMessage = evt => {
                 }).catch(logError);
                 break;
             case 'ANSWER':
+                console.log('receive ANSWER', JSON.stringify(message.payload.sdp));
                 pc.setRemoteDescription(message.payload.sdp).catch(logError);
                 break;
             case 'CANDIDATE':
