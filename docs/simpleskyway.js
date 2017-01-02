@@ -1,3 +1,6 @@
+const BACKEND_TYPE = 'OWN';
+const BACKEND_TYPE = 'SkyWay';
+
 var token = Math.random().toString(36).substr(2);
 var myUserId = ''; //(new MediaStream()).id;
 var apiKey = '894abaae-ca60-4915-8107-d68c98c0aef1';
@@ -14,10 +17,13 @@ var pcs = {
     screen: {}
 }
 
+// var url = protocol + this.options.host + ':' + this.options.port +
+//     this.options.path + 'active/list/' + this.options.key;
+
 var signalingChannel = null;
 fetch(`https://skyway.io/${apiKey}/id?ts=${Date.now() + '' + Math.random()}`).then(res => {
     res.text().then(text => {
-        //myUserId = text;
+        myUserId = text;
         signalingChannel = new WebSocket(`wss://skyway.io/peerjs?key=${apiKey}&id=${myUserId}&token=${token}`);
         signalingChannel.onmessage = signalingChannelOnMessage;
         signalingChannel.onclose = evt => {
