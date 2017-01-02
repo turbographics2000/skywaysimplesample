@@ -189,8 +189,8 @@ signalingChannelOnMessage = evt => {
                 pc.setRemoteDescription(message.payload.sdp).catch(logError);
                 break;
             case 'CANDIDATE':
-                console.log('candidate', message.candidate);
-                pc.addIceCandidate(message.candidate);
+                console.log('candidate', message.payload.candidate);
+                pc.addIceCandidate(message.payload.candidate);
                 break;
             default:
                 console.warn('You received a malformed message from ' + peer + ' of type ' + type);
