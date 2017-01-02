@@ -15,7 +15,7 @@
             dllog.onclick = _ => {
                 var sorted = logList.sort((a, b) => a.dt - b.dt);
                 var jsonStr = JSON.stringify(sorted, null, 2);
-                jsonStr = jsonStr.replace('\\r\\n', '\r\n');
+                jsonStr = jsonStr.replace(/\\r\\n/g, '\r\n');
                 var blob = new Blob([jsonStr]);
                 var a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
