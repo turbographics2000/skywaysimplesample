@@ -933,7 +933,7 @@
             url += queryString;
 
             // If there's no ID we need to wait for one before trying to init socket.
-            addLog({ type: 'xhr', url: url, method: 'GET' });
+            addLog({ action: 'retrieveId REQUEST', type: 'xhr', url: url, method: 'GET' });
             http.open('get', url, true);
             http.onerror = function(e) {
                 util.error('Error retrieving ID', e);
@@ -953,7 +953,7 @@
                     http.onerror();
                     return;
                 }
-                addLog({ type: 'xhr', url: url, method: 'GET', receiveData: http.responseText });
+                addLog({ action: 'retrieveId RESPONSE', type: 'xhr', url: url, method: 'GET', receiveData: http.responseText });
                 console.log('xhr', Date.now(), http.responseText);
                 self._initialize(http.responseText);
             };
@@ -1301,7 +1301,7 @@
                 this.options.path + 'active/list/' + this.options.key;
 
             // If there's no ID we need to wait for one before trying to init socket.
-            addLog({ type: 'xhr', url: url, method: 'GET' });
+            addLog({ action: 'REQUEST', type: 'xhr', url: url, method: 'GET' });
             http.open('get', url, true);
             http.onerror = function(e) {
                 self._abort('server-error', 'Could not get peers from the server.');
@@ -1325,7 +1325,7 @@
                 } else if (http.status !== 200) {
                     cb([]);
                 } else {
-                    addLog({ type: 'xhr', url: url, method: 'GET', receiveData: JSON.parse(http.responseText) });
+                    addLog({ action: 'RESPONSE', type: 'xhr', url: url, method: 'GET', receiveData: JSON.parse(http.responseText) });
                     cb(JSON.parse(http.responseText));
                 }
             };
@@ -1382,7 +1382,7 @@
             }
 
             this._socket = new WebSocket(this._wsUrl);
-            addLog({ type: 'ws', method: 'new', url: this._wsUrl });
+            addLog({ action: 'SOCKET START', type: 'ws', method: 'new', url: this._wsUrl });
 
             this._socket.onmessage = function(event) {
                 try {
@@ -1391,7 +1391,7 @@
                     util.log('Invalid server message', event.data);
                     return;
                 }
-                addLog({ type: 'ws', url: this.url, receiveData: data });
+                addLog({ action: 'SOCKET RECEIVE', type: 'ws', url: this.url, receiveData: data });
                 self.emit('message', data);
             };
 
@@ -1433,7 +1433,7 @@
                 this._http._index = 1;
                 this._http._streamIndex = n || 0;
                 var url = this._httpUrl + '/id?i=' + this._http._streamIndex;
-                addLog({ type: 'xhr', method: 'POST', url: url });
+                addLog({ action: 'SOCKET START', type: 'xhr', method: 'POST', url: url });
                 this._http.open('post', url, true);
                 this._http.onerror = function() {
                     // If we get an error, likely something went wrong.
@@ -1494,7 +1494,7 @@
                         util.log('Invalid server message', message);
                         return;
                     }
-                    addLog({ type: 'xhr', method: method, url: url, streaming: true, receiveData: message });
+                    addLog({ action: 'SOCKET RECEIVE', type: 'xhr', method: method, url: url, streaming: true, receiveData: message });
                     this.emit('message', message);
                 }
             }
@@ -1555,12 +1555,12 @@
 
             var message = JSON.stringify(data);
             if (this._wsOpen()) {
-                addLog({ type: 'ws', sendData: data });
+                addLog({ action: 'SOCKET SEND', type: 'ws', sendData: data });
                 this._socket.send(message);
             } else if (data.type !== 'PONG') {
                 var http = new XMLHttpRequest();
                 var url = this._httpUrl + '/' + data.type.toLowerCase();
-                addLog({ type: 'xhr', url: url, postData: data });
+                addLog({ action: 'SOCKET SEND', type: 'xhr', url: url, postData: data });
                 http.open('post', url, true);
                 http.setRequestHeader('Content-Type', 'application/json');
                 http.send(message);
