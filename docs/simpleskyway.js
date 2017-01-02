@@ -44,7 +44,8 @@ fetch(`https://skyway.io/${apiKey}/id?ts=${Date.now() + '' + Math.random()}`).th
 });
 
 getPeerList.onclick = _ => {
-    fetch(`https://skyway.io/active/list/${apiKey}`).then(res => res.text()).then(text => console.log(text));
+    // https://skyway.io/active/list/710982bb-75cd-4bb6-9ed8-f67676c0a8c9
+    fetch(`https://skyway.io/active/list/${apiKey}`).then(res => res.text()).then(text => console.log(text)).catch(e => console.log(e));
 }
 
 
