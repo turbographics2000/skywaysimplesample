@@ -82,8 +82,7 @@ function start() {
             })
             .then(_ => {
                 // send the offer to the other peer
-                console.log('send OFFER', JSON.stringify(pc.localDescription));
-                signalingChannel.send(JSON.stringify({
+                var offer = {
                     type: 'OFFER',
                     payload: {
                         sdp: {
@@ -99,7 +98,9 @@ function start() {
                         browser: 'Chrome'
                     },
                     dst: dstPeerId
-                }));
+                };
+                console.log('send OFFER', offer);
+                signalingChannel.send(JSON.stringify(offer));
             }).catch(logError);
     };
 
@@ -164,14 +165,13 @@ signalingChannelOnMessage = evt => {
                     start();
                     dstPeerId = message.src;
                 }
-                console.log('receive OFFER', JSON.stringify(message.payload.sdp));
+                console.log('receive OFFER', message);
                 pc.setRemoteDescription(message.payload.sdp).then(_ => {
                     return pc.createAnswer();
                 }).then(answer => {
                     return pc.setLocalDescription(answer);
                 }).then(_ => {
-                    console.log('send ANSWER', JSON.stringify(pc.localDescription));
-                    var str = JSON.stringify({
+                    var answer = {
                         type: 'ANSWER',
                         payload: {
                             sdp: {
@@ -182,12 +182,13 @@ signalingChannelOnMessage = evt => {
                             connectionId: mediaConnectionId,
                             browser: 'Chrome'
                         },
-                    });
-                    signalingChannel.send(str);
+                    };
+                    console.log('send ANSWER', answer);
+                    signalingChannel.send(JSON.stringify(answer));
                 }).catch(logError);
                 break;
             case 'ANSWER':
-                console.log('receive ANSWER', JSON.stringify(message.payload.sdp));
+                console.log('receive ANSWER', message);
                 pc.setRemoteDescription(message.payload.sdp).catch(logError);
                 break;
             case 'CANDIDATE':
