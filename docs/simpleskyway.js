@@ -16,7 +16,7 @@ var pcs = {
 
 // var url = protocol + this.options.host + ':' + this.options.port +
 //     this.options.path + 'active/list/' + this.options.key;
-fetch(`https://skyway.io/${apiKey}/${myUserId}/${token}/id?i=0`, { method: 'POST' }).then(res => res.text).then(text => console.log(text));
+fetch(`https://skyway.io/${apiKey}/${myUserId}/${token}/id?i=0`, { method: 'POST' }).then(res => res.text()).then(text => console.log(text));
 
 var signalingChannel = null;
 fetch(`https://skyway.io/${apiKey}/id?ts=${Date.now() + '' + Math.random()}`).then(res => {
