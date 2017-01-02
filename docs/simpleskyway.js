@@ -199,6 +199,8 @@ signalingChannelOnMessage = evt => {
                 console.warn('You received a malformed message from ' + peer + ' of type ' + type);
                 break;
         }
+    } else {
+        console.log('unknown message', message);
     }
 };
 
