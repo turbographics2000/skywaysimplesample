@@ -6,25 +6,9 @@
     <script>
         var logList = [];
 
-        function addLog({
-            type = 'xhr',
-            url = '',
-            method = '',
-            streaming = '',
-            postData = '',
-            sendData = '',
-            receiveData = ''
-        }) {
-            logList.push({
-                type,
-                url,
-                method,
-                streaming,
-                postData,
-                sendData,
-                receiveData,
-                dt: Date.now()
-            });
+        function addLog(log) {
+            log.dt = Date.now();
+            logList.push(log);
         }
 
         window.addEventListener('load', _ => {
