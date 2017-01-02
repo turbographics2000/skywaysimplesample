@@ -43,6 +43,10 @@ fetch(`https://skyway.io/${apiKey}/id?ts=${Date.now() + '' + Math.random()}`).th
 
 });
 
+getPeerList.onclick = _ => {
+    fetch(`https://skyway.io/active/list/${apiKey}`).then(res => res.text()).then(text => console.log(text));
+}
+
 
 function start(dstPeerId) {
 
