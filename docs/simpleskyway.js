@@ -14,20 +14,59 @@ var pcs = {
     screen: {}
 }
 
+var logList = [];
+
+function addLog(log) {
+    log.dt = Date.now();
+    logList.push(log);
+}
+
+window.addEventListener('load', _ => {
+    dllog.onclick = _ => {
+        var sorted = logList.sort((a, b) => a.dt - b.dt);
+        var jsonStr = JSON.stringify(sorted, null, 2);
+        jsonStr = jsonStr.replace(/\\r\\n/g, '\r\n');
+        var blob = new Blob([jsonStr]);
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `log_${window['my-id'].textContent}.json`;
+        if (window.chrome) {
+            a.click();
+        } else {
+            var clickEvent = new MouseEvent("click", {
+                "view": window,
+                "bubbles": true,
+                "cancelable": false
+            });
+            a.dispatchEvent(clickEvent);
+        }
+    }
+});
+
+
 // var url = protocol + this.options.host + ':' + this.options.port +
 //     this.options.path + 'active/list/' + this.options.key;
 
 var signalingChannel = null;
-fetch(`https://skyway.io/${apiKey}/id?ts=${Date.now() + '' + Math.random()}`).then(res => {
+var retrieveIdRequestURL = `https://skyway.io/${apiKey}/id?ts=${Date.now() + '' + Math.random()}`;
+addLog({ action: 'retrieveId REQUEST', type: 'fetch', method: 'GET', url: retrieveIdRequestURL });
+fetch(retrieveIdRequestURL).then(res => {
     res.text().then(text => {
+        addLog({ action: 'retrieveId RESPONSE', type: 'fetch', method: 'GET', url: retrieveIdRequestURL, receiveData: text });
         myUserId = text;
-        fetch(`https://skyway.io/${apiKey}/${myUserId}/${token}/id?i=0`, { method: 'POST' }).then(res => res.text()).then(text => console.log(text));
+        var xhrURL = `https://skyway.io/${apiKey}/${myUserId}/${token}/id?i=0`;
+        addLog({ action: 'SOCKET START', type: 'xhr' });
+        fetch(xhrURL, { method: 'POST' }).then(res => res.text()).then(text => console.log(text));
+        var wsURL = `wss://skyway.io/peerjs?key=${apiKey}&id=${myUserId}&token=${token}`;
         signalingChannel = new WebSocket(`wss://skyway.io/peerjs?key=${apiKey}&id=${myUserId}&token=${token}`);
+        addLog({ type: 'SOCKET START', url: wsURL });
         signalingChannel.onmessage = signalingChannelOnMessage;
         signalingChannel.onclose = evt => {
+            addLog({ action: 'SOCKET CLOSE', type: 'ws', url: wsURL, receiveData: evt.message });
             console.log('signalingChannel close', evt);
         };
         signalingChannel.onerror = evt => {
+            addLog({ action: 'SOCKET ERROR', type: 'ws', url: wsURL, receiveData: evt.message });
             console.log('signalingChannel error', evt);
         };
         // get a local stream, show it in a self-view and add it to be sent
@@ -43,6 +82,8 @@ fetch(`https://skyway.io/${apiKey}/id?ts=${Date.now() + '' + Math.random()}`).th
 }).catch(err => {
 
 });
+
+
 
 getPeerList.onclick = _ => {
     // https://skyway.io/active/list/710982bb-75cd-4bb6-9ed8-f67676c0a8c9
@@ -100,6 +141,7 @@ function start() {
                     dst: dstPeerId
                 };
                 console.log('send OFFER', offer);
+                addLog({ action: 'SOCKET SEND', type: 'ws', sendData: offer });
                 signalingChannel.send(JSON.stringify(offer));
             }).catch(logError);
     };
@@ -135,6 +177,7 @@ makeCall.onclick = _ => {
 
 signalingChannelOnMessage = evt => {
     var message = JSON.parse(evt.data);
+    addLog({ action: 'SOCKET RECEIVE', type: 'ws', receiveData: message });
     if (message.type) {
         var payload = message.payload;
         var peer = message.src;
@@ -155,6 +198,7 @@ signalingChannelOnMessage = evt => {
                 break;
             case 'PING':
                 console.log('PING');
+                addLog({ action: 'SCOKET SEND', sendData: { type: 'PONG' } });
                 signalingChannel.send(JSON.stringify({ type: 'PONG' }));
                 break;
             case 'LEAVE': // Another peer has closed its connection to this peer.
@@ -188,6 +232,7 @@ signalingChannelOnMessage = evt => {
                         },
                     };
                     console.log('send ANSWER', answer);
+                    addLog({ action: 'SOCKET SEND', type: 'ws', sendData: answer });
                     signalingChannel.send(JSON.stringify(answer));
                 }).catch(logError);
                 break;
