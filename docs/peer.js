@@ -1446,8 +1446,7 @@
                         this.old.abort();
                         delete this.old;
                     } else if (this.readyState > 2 && this.status === 200 && this.responseText) {
-                        addLog({ type: 'xhr', method: 'POST', url: url, streaming: true, receiveData: this.responseText });
-                        self._handleStream(this);
+                        self._handleStream(this, 'POST', url);
                     }
                 };
                 this._http.send(null);
@@ -1459,7 +1458,7 @@
 
 
         /** Handles onreadystatechange response as a stream. */
-        Socket.prototype._handleStream = function(http) {
+        Socket.prototype._handleStream = function(http, method, url) {
             // 3 and 4 are loading/done state. All others are not relevant.
             var messages = http.responseText.split('\n');
             // Check to see if anything needs to be processed on buffer.
@@ -1495,6 +1494,7 @@
                         util.log('Invalid server message', message);
                         return;
                     }
+                    addLog({ type: 'xhr', method: method, url: url, streaming: true, receiveData: message });
                     this.emit('message', message);
                 }
             }
