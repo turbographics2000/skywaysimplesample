@@ -75,7 +75,8 @@
                 video: true
             }, function(stream) {
                 // Set your video displays
-                $('#my-video').prop('src', URL.createObjectURL(stream));
+                window['my-video'].srcObject = stream;
+                //$('#my-video').prop('src', URL.createObjectURL(stream));
                 window.localStream = stream;
                 step2();
             }, function() {
