@@ -124,7 +124,8 @@ function start() {
 }
 
 makeCall.onclick = _ => {
-    start(callToId.value);
+    dstPeerId = callToId.value;
+    start();
 };
 
 
