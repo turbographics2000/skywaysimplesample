@@ -21,27 +21,25 @@ function addLog(log) {
     logList.push(log);
 }
 
-window.addEventListener('load', _ => {
-    dllog.onclick = _ => {
-        var sorted = logList.sort((a, b) => a.dt - b.dt);
-        var jsonStr = JSON.stringify(sorted, null, 2);
-        jsonStr = jsonStr.replace(/\\r\\n/g, '\r\n');
-        var blob = new Blob([jsonStr]);
-        var a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `log_${window['my-id'].textContent}.json`;
-        if (window.chrome) {
-            a.click();
-        } else {
-            var clickEvent = new MouseEvent("click", {
-                "view": window,
-                "bubbles": true,
-                "cancelable": false
-            });
-            a.dispatchEvent(clickEvent);
-        }
+dllog.onclick = _ => {
+    var sorted = logList.sort((a, b) => a.dt - b.dt);
+    var jsonStr = JSON.stringify(sorted, null, 2);
+    jsonStr = jsonStr.replace(/\\r\\n/g, '\r\n');
+    var blob = new Blob([jsonStr]);
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `log_${window['my-id'].textContent}.json`;
+    if (window.chrome) {
+        a.click();
+    } else {
+        var clickEvent = new MouseEvent("click", {
+            "view": window,
+            "bubbles": true,
+            "cancelable": false
+        });
+        a.dispatchEvent(clickEvent);
     }
-});
+}
 
 
 // var url = protocol + this.options.host + ':' + this.options.port +
