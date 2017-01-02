@@ -86,8 +86,8 @@ function start() {
                     type: 'OFFER',
                     payload: {
                         sdp: {
-                            type: offer.type,
-                            sdp: offer.sdp
+                            type: pc.localDescription.type,
+                            sdp: pc.localDescription.sdp
                         },
                         type: 'media',
                         //label: connection.label,
