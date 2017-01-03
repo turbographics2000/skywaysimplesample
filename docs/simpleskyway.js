@@ -14,7 +14,7 @@ var signalingChannel = null;
 window.onbeforeunload = function() {
     if (pc) pc.close();
     if (signalingChannel) signalingChannel.close();
-    return null;
+    return 'null';
 };
 
 var dstPeerId = null;
