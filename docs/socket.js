@@ -95,7 +95,7 @@ Socket.prototype._startWebSocket = function(id) {
             }, 5000);
         }
         self._sendQueuedMessages();
-        this.log('Socket open');
+        self.log('Socket open');
     };
 }
 
