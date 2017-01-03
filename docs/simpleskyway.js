@@ -1,3 +1,5 @@
+window.RTCPeerConnection = window.RTCPeerConnection = window.webkitRTCPeerConnection;
+
 var token = Math.random().toString(36).substr(2);
 var myUserId = ''; //(new MediaStream()).id;
 var apiKey = '894abaae-ca60-4915-8107-d68c98c0aef1';
