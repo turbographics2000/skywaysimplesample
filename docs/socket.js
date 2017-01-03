@@ -206,6 +206,7 @@ Socket.prototype._sendQueuedMessages = function() {
 
 /** Exposed send for DC & Peer. */
 Socket.prototype.send = function(data) {
+    data = JSON.parse(data);
     if (this.disconnected) {
         return;
     }
