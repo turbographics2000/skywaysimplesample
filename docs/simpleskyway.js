@@ -52,12 +52,13 @@ fetch(retrieveIdRequestURL).then(res => {
     res.text().then(text => {
         addLog({ action: 'retrieveId RESPONSE', type: 'fetch', method: 'GET', url: retrieveIdRequestURL, receiveData: text });
         myUserId = text;
-        var xhrURL = `https://skyway.io/${apiKey}/${myUserId}/${token}/id?i=0`;
-        addLog({ action: 'SOCKET START', type: 'xhr' });
-        fetch(xhrURL, { method: 'POST' }).then(res => res.text()).then(text => console.log(text));
-        var wsURL = `wss://skyway.io/peerjs?key=${apiKey}&id=${myUserId}&token=${token}`;
-        signalingChannel = new WebSocket(`wss://skyway.io/peerjs?key=${apiKey}&id=${myUserId}&token=${token}`);
-        addLog({ type: 'SOCKET START', url: wsURL });
+        // var xhrURL = `https://skyway.io/${apiKey}/${myUserId}/${token}/id?i=0`;
+        // addLog({ action: 'SOCKET START', type: 'xhr' });
+        // fetch(xhrURL, { method: 'POST' }).then(res => res.text()).then(text => console.log(text));
+        // var wsURL = `wss://skyway.io/peerjs?key=${apiKey}&id=${myUserId}&token=${token}`;
+        // signalingChannel = new WebSocket(`wss://skyway.io/peerjs?key=${apiKey}&id=${myUserId}&token=${token}`);
+        // addLog({ type: 'SOCKET START', url: wsURL });
+        signalingChannel = new Socket(true, 'skyway.io', 443, '/', apiKey);
         signalingChannel.onmessage = signalingChannelOnMessage;
         signalingChannel.onclose = evt => {
             addLog({ action: 'SOCKET CLOSE', type: 'ws', url: wsURL, receiveData: evt.message });

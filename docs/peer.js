@@ -1382,7 +1382,6 @@
             }
 
             this._socket = new WebSocket(this._wsUrl);
-            addLog({ action: 'SOCKET START', type: 'ws', method: 'new', url: this._wsUrl });
 
             this._socket.onmessage = function(event) {
                 try {
@@ -1391,13 +1390,14 @@
                     util.log('Invalid server message', event.data);
                     return;
                 }
-                addLog({ action: 'SOCKET RECEIVE', type: 'ws', url: this.url, receiveData: data });
+                addLog({ action: 'SOCKET RECEIVE', type: 'ws', url: this._wsUrl, receiveData: data });
                 self.emit('message', data);
             };
 
             // Take care of the queue of connections if necessary and make sure Peer knows
             // socket is open.
             this._socket.onopen = function() {
+                addLog({ action: 'SOCKET OPEN', type: 'ws', url: this._wsUrl });
                 if (self._timeout) {
                     clearTimeout(self._timeout);
                     setTimeout(function() {
@@ -1413,11 +1413,13 @@
             };
 
             this._socket.onerror = function(err) {
+                addLog({ action: 'SOCKET ERROR', type: 'ws', url: this._wsUrl, msg: err.message });
                 util.error('WS error code ' + err.code);
             }
 
             // Fall back to XHR if WS closes
             this._socket.onclose = function(msg) {
+                addLog({ action: 'SOCKET CLOSE', type: 'ws', url: this._wsUrl, data: { code: msg.code, reason: msg.reason, wasClean: msg.wasClean } });
                 util.error("WS closed with code " + msg.code);
                 if (!self.disconnected) {
                     self._startXhrStream();
@@ -1432,10 +1434,10 @@
                 this._http = new XMLHttpRequest();
                 this._http._index = 1;
                 this._http._streamIndex = n || 0;
-                var url = this._httpUrl + '/id?i=' + this._http._streamIndex;
-                addLog({ action: 'SOCKET START', type: 'xhr', method: 'POST', url: url });
+                this._httpUrl2 = this._httpUrl + '/id?i=' + this._http._streamIndex;
                 this._http.open('post', url, true);
-                this._http.onerror = function() {
+                this._http.onerror = function(err) {
+                    addLog({ action: 'SOCKET ERROR', type: 'xhr', method: 'POST', url: this._httpUrl2, msg: err.message });
                     // If we get an error, likely something went wrong.
                     // Stop streaming.
                     clearTimeout(self._timeout);
@@ -1446,9 +1448,10 @@
                         this.old.abort();
                         delete this.old;
                     } else if (this.readyState > 2 && this.status === 200 && this.responseText) {
-                        self._handleStream(this, 'POST', url);
+                        self._handleStream(this);
                     }
                 };
+                addLog({ action: 'SOCKET OPEN', type: 'xhr', method: 'POST', url: this._httpUrl2 });
                 this._http.send(null);
                 this._setHTTPTimeout();
             } catch (e) {
@@ -1458,7 +1461,7 @@
 
 
         /** Handles onreadystatechange response as a stream. */
-        Socket.prototype._handleStream = function(http, method, url) {
+        Socket.prototype._handleStream = function(http) {
             // 3 and 4 are loading/done state. All others are not relevant.
             var messages = http.responseText.split('\n');
             // Check to see if anything needs to be processed on buffer.
@@ -1472,6 +1475,7 @@
                         http._buffer.shift(index);
                         break;
                     }
+                    addLog({ action: 'SOCKET RECEIVE', type: 'xhr', method: 'POST', url: this._httpUrl2, streaming: true, data: bufferedMessage });
                     this.emit('message', bufferedMessage);
                 }
             }
@@ -1494,7 +1498,7 @@
                         util.log('Invalid server message', message);
                         return;
                     }
-                    addLog({ action: 'SOCKET RECEIVE', type: 'xhr', method: method, url: url, streaming: true, receiveData: message });
+                    addLog({ action: 'SOCKET RECEIVE', type: 'xhr', method: 'POST', url: this._httpUrl2, streaming: true, data: message });
                     this.emit('message', message);
                 }
             }
@@ -1503,6 +1507,7 @@
         Socket.prototype._setHTTPTimeout = function() {
             var self = this;
             this._timeout = setTimeout(function() {
+                addLog({ action: 'SOCKET TIMEOUT', type: 'xhr', method: 'POST', url: this._httpUrl2 });
                 var old = self._http;
                 if (!self._wsOpen()) {
                     self._startXhrStream(old._streamIndex + 1);
@@ -1516,6 +1521,7 @@
         Socket.prototype._setWSTimeout = function() {
             var self = this;
             this._wsTimeout = setTimeout(function() {
+                addLog({ action: 'SOCKET TIMEOUT', type: 'ws', url: this._wsUrl });
                 if (self._wsOpen()) {
                     self._socket.close();
                     util.error('WS timed out');
@@ -1549,18 +1555,19 @@
             }
 
             if (!data.type) {
+                addLog({ action: 'SOCKET ERROR', type: 'ws', url: this._wsUrl, msg: 'Invalid message' });
                 this.emit('error', 'Invalid message');
                 return;
             }
 
             var message = JSON.stringify(data);
             if (this._wsOpen()) {
-                addLog({ action: 'SOCKET SEND', type: 'ws', sendData: data });
+                addLog({ action: 'SOCKET SEND', type: 'ws', data: data });
                 this._socket.send(message);
             } else if (data.type !== 'PONG') {
                 var http = new XMLHttpRequest();
                 var url = this._httpUrl + '/' + data.type.toLowerCase();
-                addLog({ action: 'SOCKET SEND', type: 'xhr', url: url, postData: data });
+                addLog({ action: 'SOCKET SEND', type: 'xhr', url: url, data: data });
                 http.open('post', url, true);
                 http.setRequestHeader('Content-Type', 'application/json');
                 http.send(message);
