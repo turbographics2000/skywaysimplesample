@@ -15,6 +15,7 @@ function Socket(secure, host, port, path, key) {
     }
     this.emit = function(eventName, eventArg) {
         var listeners = this.eventListeners[eventName];
+        if (!listeners.length) return;
         for (var i = 0, l = listeners.length; i < l; i++) {
             listeners[i](eventArg);
         }

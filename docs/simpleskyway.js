@@ -70,6 +70,23 @@ fetch(retrieveIdRequestURL).then(res => {
         // };
         signalingChannel = new Socket(true, 'skyway.io', 443, '/', apiKey);
         signalingChannel.on('message', signalingChannelOnMessage);
+        signalingChannel.on('error', function(error) {
+            //self._abort('socket-error', error);
+        });
+        signalingChannel.on('disconnected', function() {
+            // If we haven't explicitly disconnected, emit error and disconnect.
+            if (!this.disconnected) {
+                //self.emitError('network', 'Lost connection to server.');
+                this.disconnect();
+            }
+        });
+        signalingChannel.on('close', function() {
+            // If we haven't explicitly disconnected, emit error.
+            // if (!this.disconnected) {
+            //     this._abort('socket-closed', 'Underlying socket is already closed.');
+            // }
+        });
+
         signalingChannel.start(myUserId, token);
         // get a local stream, show it in a self-view and add it to be sent
         navigator.mediaDevices.getUserMedia({ video: true })
