@@ -249,6 +249,7 @@ signalingChannelOnMessage = message => {
                             connectionId: mediaConnectionId,
                             browser: 'Chrome'
                         },
+                        dst: dstPeerId
                     };
                     console.log('send ANSWER', answer);
                     addLog({ action: 'SOCKET SEND', type: 'ANSWER', data: answer });
