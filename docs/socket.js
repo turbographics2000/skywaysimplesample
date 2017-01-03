@@ -226,12 +226,12 @@ Socket.prototype.send = function(data) {
 
     var message = JSON.stringify(data);
     if (this._wsOpen()) {
-        addLog({ action: 'SOCKET SEND', type: 'ws', data: data });
+        //addLog({ action: 'SOCKET SEND', type: 'ws', data: data });
         this._socket.send(message);
     } else {
         var http = new XMLHttpRequest();
         var url = this._httpUrl + '/' + data.type.toLowerCase();
-        addLog({ action: 'SOCKET SEND', type: 'xhr', url: url, data: data });
+        //addLog({ action: 'SOCKET SEND', type: 'xhr', url: url, data: data });
         http.open('post', url, true);
         http.setRequestHeader('Content-Type', 'application/json');
         http.send(message);
