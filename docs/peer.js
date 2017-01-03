@@ -1390,7 +1390,7 @@
                     util.log('Invalid server message', event.data);
                     return;
                 }
-                addLog({ action: 'SOCKET RECEIVE', type: 'ws', url: this._wsUrl, receiveData: data });
+                //addLog({ action: 'SOCKET RECEIVE', type: 'ws', url: this._wsUrl, receiveData: data });
                 self.emit('message', data);
             };
 
