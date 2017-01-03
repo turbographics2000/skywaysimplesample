@@ -146,7 +146,9 @@ function start() {
 
     // let the "negotiationneeded" event trigger offer generation
     pc.onnegotiationneeded = _ => {
+        console.log('create offer');
         pc.createOffer().then(offer => {
+                console.log('setLocalDescription offer');
                 return pc.setLocalDescription(offer);
             })
             .then(_ => {
@@ -186,15 +188,15 @@ function start() {
         }
     }
 
-    setTimeout(function() {
-        if (pc.addTrack) {
-            //pc.addTrack(myVideo.srcObject.getAudioTracks()[0], stream);
-            pc.addTrack(myVideo.srcObject.getVideoTracks()[0], stream);
-        } else {
-            pc.addStream(myVideo.srcObject);
-        }
+    //setTimeout(function() {
+    if (pc.addTrack) {
+        //pc.addTrack(myVideo.srcObject.getAudioTracks()[0], stream);
+        pc.addTrack(myVideo.srcObject.getVideoTracks()[0], stream);
+    } else {
+        pc.addStream(myVideo.srcObject);
+    }
 
-    }, 100);
+    //}, 100);
 }
 
 makeCall.onclick = _ => {
