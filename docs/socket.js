@@ -5,6 +5,14 @@
 function Socket(secure, host, port, path, key) {
     if (!(this instanceof Socket)) return new Socket(secure, host, port, path, key);
 
+
+    this.eventListeners = {};
+    this.on = function(eventName, listener) {
+        this.eventListeners[eventName] = this.eventListeners[eventName] || [];
+        if (!this.eventListeners[eventName].includes(listener)) {
+            this.eventListeners[eventName].push(listener);
+        }
+    }
     this.emit = function(eventName, eventArg) {
         var listeners = this.eventListeners[eventName];
         for (var i = 0, l = listeners.length; i < l; i++) {
