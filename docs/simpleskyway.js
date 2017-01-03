@@ -8,7 +8,14 @@ var configuration = {
         urls: 'stun:stun.skyway.io:3478'
     }]
 };
+
 var pc = null;
+var signalingChannel = null;
+window.onbeforeunload = evt => {
+    if (pc) pc.close();
+    if (signalingChannel) signalingChannel.close();
+}
+
 var dstPeerId = null;
 
 var pcs = {
@@ -47,7 +54,7 @@ dllog.onclick = _ => {
 // var url = protocol + this.options.host + ':' + this.options.port +
 //     this.options.path + 'active/list/' + this.options.key;
 
-var signalingChannel = null;
+
 var retrieveIdRequestURL = `https://skyway.io/${apiKey}/id?ts=${Date.now() + '' + Math.random()}`;
 addLog({ action: 'retrieveId REQUEST', type: 'fetch', method: 'GET', url: retrieveIdRequestURL });
 fetch(retrieveIdRequestURL).then(res => {
@@ -69,9 +76,6 @@ fetch(retrieveIdRequestURL).then(res => {
             addLog({ action: 'SOCKET ERROR', type: 'ws', url: wsURL, receiveData: evt.message });
             console.log('signalingChannel error', evt);
         };
-        window.onbeforeunload = evt => {
-            signalingChannel.close();
-        }
 
         // signalingChannel = new Socket(true, 'skyway.io', 443, '/', apiKey);
         // signalingChannel.on('message', signalingChannelOnMessage);
