@@ -73,7 +73,7 @@ Socket.prototype._startWebSocket = function(id) {
             this.log('Invalid server message', event.data);
             return;
         }
-        addLog({ action: 'SOCKET RECEIVE', type: 'ws', url: this._wsUrl, data: data });
+        //addLog({ action: 'SOCKET RECEIVE', type: 'ws', url: this._wsUrl, data: data });
         self.emit('message', data);
     };
 
@@ -149,7 +149,7 @@ Socket.prototype._handleStream = function(http) {
                 http._buffer.shift(index);
                 break;
             }
-            addLog({ action: 'SOCKET RECEIVE', type: 'xhr', method: 'POST', url: this._httpUrl2, data: bufferedMessage });
+            //addLog({ action: 'SOCKET RECEIVE', type: 'xhr', method: 'POST', url: this._httpUrl2, data: bufferedMessage });
             this.emit('message', bufferedMessage);
         }
     }
@@ -172,7 +172,7 @@ Socket.prototype._handleStream = function(http) {
                 this.log('Invalid server message', message);
                 return;
             }
-            addLog({ action: 'SOCKET RECEIVE', type: 'xhr', method: 'POST', url: this._httpUrl2, data: message });
+            //addLog({ action: 'SOCKET RECEIVE', type: 'xhr', method: 'POST', url: this._httpUrl2, data: message });
             this.emit('message', message);
         }
     }
