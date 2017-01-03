@@ -73,14 +73,14 @@ Socket.prototype._startWebSocket = function(id) {
             return;
         }
         addLog({ action: 'SOCKET RECEIVE', type: 'ws', url: this._wsUrl, data: data });
-        this.emit('message', data);
+        self.emit('message', data);
     };
 
     this._socket.onclose = function(event) {
         addLog({ action: 'SOCKET CLOSE', type: 'ws', url: this._wsUrl, msg: event.message });
-        this.log('Socket closed.');
+        self.log('Socket closed.');
         self.disconnected = true;
-        this.emit('disconnected');
+        self.emit('disconnected');
     };
 
     // Take care of the queue of connections if necessary and make sure Peer knows
