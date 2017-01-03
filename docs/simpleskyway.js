@@ -11,11 +11,11 @@ var configuration = {
 
 var pc = null;
 var signalingChannel = null;
-window.addEventListener('beforeunload', function() {
+window.onbeforeunload = function() {
     if (pc) pc.close();
     if (signalingChannel) signalingChannel.close();
     return null;
-});
+};
 
 var dstPeerId = null;
 
