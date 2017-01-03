@@ -12,6 +12,7 @@ var configuration = {
 var pc = null;
 var signalingChannel = null;
 window.onbeforeunload = evt => {
+    debugger;
     if (pc) pc.close();
     if (signalingChannel) signalingChannel.close();
 }
