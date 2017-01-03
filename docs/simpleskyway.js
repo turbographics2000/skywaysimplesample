@@ -179,15 +179,12 @@ function start() {
         }
     }
 
-    setTimeout(function() {
-        if (pc.addTrack) {
-            //pc.addTrack(myVideo.srcObject.getAudioTracks()[0], stream);
-            pc.addTrack(myVideo.srcObject.getVideoTracks()[0], stream);
-        } else {
-            pc.addStream(myVideo.srcObject);
-        }
-
-    }, 100);
+    if (pc.addTrack) {
+        //pc.addTrack(myVideo.srcObject.getAudioTracks()[0], stream);
+        pc.addTrack(myVideo.srcObject.getVideoTracks()[0], stream);
+    } else {
+        pc.addStream(myVideo.srcObject);
+    }
 }
 
 makeCall.onclick = _ => {
