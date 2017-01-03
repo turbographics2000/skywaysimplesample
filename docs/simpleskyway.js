@@ -179,7 +179,7 @@ makeCall.onclick = _ => {
 
 signalingChannelOnMessage = message => {
     //var message = JSON.parse(evt.data);
-    addLog({ action: 'SOCKET RECEIVE', type: 'ws', message: msg });
+    addLog({ action: 'SOCKET RECEIVE', type: 'ws', message: message });
     if (message.type) {
         var payload = message.payload;
         var peer = message.src;
