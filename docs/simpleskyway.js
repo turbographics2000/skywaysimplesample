@@ -200,37 +200,31 @@ signalingChannelOnMessage = message => {
         var payload = message.payload;
         var peer = message.src;
         var connection;
+        addLog({ action: 'SOCKET RECEIVE', type: 'OFFER', data: message });
 
         switch (message.type) {
             case 'OPEN': // The connection to the server is open.
                 console.log('signalingChannel open');
-                addLog({ action: 'SCOKET RECEIVE', type: 'OPEN' });
                 break;
             case 'ERROR': // Server error.
                 console.log('server-error', payload.msg);
-                addLog({ action: 'SCOKET RECEIVE', type: 'ERROR', data: payload.msg });
                 break;
             case 'ID-TAKEN': // The selected ID is taken.
                 console.log('unavailable-id', `ID "${myUserId}" is taken`);
-                addLog({ action: 'SCOKET RECEIVE', type: 'ID-TAKEN', data: `ID "${myUserId}" is taken` });
                 break;
             case 'INVALID-KEY': // The given API key cannot be found.
                 console.log('invalid-key', `API KEY "${apiKey}" is invalid`);
-                addLog({ action: 'SCOKET RECEIVE', type: 'INVALID-KEY', data: `API KEY "${apiKey}" is invalid` });
                 break;
             case 'PING':
                 console.log('PING');
-                addLog({ action: 'SCOKET RECEIVE', type: 'PING' });
                 addLog({ action: 'SCOKET SEND', sendData: { type: 'PONG' } });
                 signalingChannel.send(JSON.stringify({ type: 'PONG' }));
                 break;
             case 'LEAVE': // Another peer has closed its connection to this peer.
                 console.log('Received leave message from', peer);
-                addLog({ action: 'SOCKET RECEIVE', type: 'LEAVE', data: 'Received leave message from', peer });
                 break;
             case 'EXPIRE': // The offer sent to a peer has expired without response.
                 console.log('peer-unavailable', 'Could not connect to peer ' + peer);
-                addLog({ action: 'SOCKET RECEIVE', type: 'EXPIRE', data: 'Could not connect to peer ' + peer });
                 break;
             case 'OFFER': // we should consider switching this to CALL/CONNECT, but this is the least breaking option.
                 if (!pc) {
@@ -238,7 +232,6 @@ signalingChannelOnMessage = message => {
                     dstPeerId = message.src;
                 }
                 console.log('receive OFFER', message);
-                addLog({ action: 'SOCKET RECEIVE', type: 'OFFER', data: message.payload.sdp });
                 pc.setRemoteDescription(message.payload.sdp).then(_ => {
                     console.log('create answer');
                     return pc.createAnswer();
@@ -264,17 +257,14 @@ signalingChannelOnMessage = message => {
                 break;
             case 'ANSWER':
                 console.log('RECEIVE ANSWER', message);
-                addLog({ action: 'SOCKET RECEIVE', type: 'ANSWER', data: message.payload.sdp });
                 pc.setRemoteDescription(message.payload.sdp).catch(logError);
                 break;
             case 'CANDIDATE':
-                addLog({ action: 'SOCKET RECEIVE', type: 'CANDIDATE', data: message.payload.candidate });
                 console.log('candidate', message.payload.candidate);
                 pc.addIceCandidate(message.payload.candidate);
                 break;
             default:
                 console.warn('You received a malformed message from ' + peer + ' of type ' + type);
-                addLog({ action: 'SOCKET RECEIVE', type: 'MALFORMED MESSAGE', data: `You received a malformed message from ${peer} of type ${type}` });
                 break;
         }
     } else {
