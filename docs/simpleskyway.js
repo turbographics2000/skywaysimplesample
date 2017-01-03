@@ -69,6 +69,9 @@ fetch(retrieveIdRequestURL).then(res => {
             addLog({ action: 'SOCKET ERROR', type: 'ws', url: wsURL, receiveData: evt.message });
             console.log('signalingChannel error', evt);
         };
+        window.onbeforeunload = evt => {
+            signalingChannel.close();
+        }
 
         // signalingChannel = new Socket(true, 'skyway.io', 443, '/', apiKey);
         // signalingChannel.on('message', signalingChannelOnMessage);
