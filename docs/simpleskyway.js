@@ -61,7 +61,7 @@ fetch(retrieveIdRequestURL).then(res => {
         // signalingChannel = new WebSocket(`wss://skyway.io/peerjs?key=${apiKey}&id=${myUserId}&token=${token}`);
         // addLog({ type: 'SOCKET START', url: wsURL });
         signalingChannel = new Socket(true, 'skyway.io', 443, '/', apiKey);
-        signalingChannel.onmessage = signalingChannelOnMessage;
+        signalingChannel.on('message', signalingChannelOnMessage);
         signalingChannel.onclose = evt => {
             addLog({ action: 'SOCKET CLOSE', type: 'ws', url: wsURL, receiveData: evt.message });
             console.log('signalingChannel close', evt);
@@ -176,9 +176,9 @@ makeCall.onclick = _ => {
 };
 
 
-signalingChannelOnMessage = evt => {
-    var message = JSON.parse(evt.data);
-    addLog({ action: 'SOCKET RECEIVE', type: 'ws', receiveData: message });
+signalingChannelOnMessage = message => {
+    //var message = JSON.parse(evt.data);
+    addLog({ action: 'SOCKET RECEIVE', type: 'ws', message: msg });
     if (message.type) {
         var payload = message.payload;
         var peer = message.src;
