@@ -192,7 +192,7 @@ makeCall.onclick = _ => {
     start();
 };
 
-
+var offerCnt = 0;
 signalingChannelOnMessage = message => {
     //var message = JSON.parse(evt.data);
     if (message.type) {
@@ -200,7 +200,12 @@ signalingChannelOnMessage = message => {
         var peer = message.src;
         var connection;
         addLog({ action: 'SOCKET RECEIVE', type: 'OFFER', data: message });
-
+        if (message.type === 'offer') {
+            offerCnt++;
+            if (offerCnt === 2) {
+                debugger;
+            }
+        }
         switch (message.type) {
             case 'OPEN': // The connection to the server is open.
                 console.log('signalingChannel open');
