@@ -10,7 +10,7 @@ function Socket(secure, host, port, path, key) {
     this.on = function(eventName, listener) {
         this.eventListeners[eventName] = this.eventListeners[eventName] || [];
         if (!this.eventListeners[eventName].includes(listener)) {
-            this.eventListeners[eventName].push(listener);
+            this.eventListeners[eventName].push(listener.bind(this));
         }
     }
     this.emit = function(eventName, eventArg) {
