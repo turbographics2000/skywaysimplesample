@@ -22,7 +22,7 @@ function Socket(secure, host, port, path, key) {
     };
     this.logList = [];
     this.log = function(level = 'log', log, data) {
-        logList.push({
+        this.logList.push({
             level: level,
             dt: Date.now(),
             log: log,
