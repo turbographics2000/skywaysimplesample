@@ -60,16 +60,17 @@ fetch(retrieveIdRequestURL).then(res => {
         // var wsURL = `wss://skyway.io/peerjs?key=${apiKey}&id=${myUserId}&token=${token}`;
         // signalingChannel = new WebSocket(`wss://skyway.io/peerjs?key=${apiKey}&id=${myUserId}&token=${token}`);
         // addLog({ type: 'SOCKET START', url: wsURL });
+        // signalingChannel.onclose = evt => {
+        //     addLog({ action: 'SOCKET CLOSE', type: 'ws', url: wsURL, receiveData: evt.message });
+        //     console.log('signalingChannel close', evt);
+        // };
+        // signalingChannel.onerror = evt => {
+        //     addLog({ action: 'SOCKET ERROR', type: 'ws', url: wsURL, receiveData: evt.message });
+        //     console.log('signalingChannel error', evt);
+        // };
         signalingChannel = new Socket(true, 'skyway.io', 443, '/', apiKey);
         signalingChannel.on('message', signalingChannelOnMessage);
-        signalingChannel.onclose = evt => {
-            addLog({ action: 'SOCKET CLOSE', type: 'ws', url: wsURL, receiveData: evt.message });
-            console.log('signalingChannel close', evt);
-        };
-        signalingChannel.onerror = evt => {
-            addLog({ action: 'SOCKET ERROR', type: 'ws', url: wsURL, receiveData: evt.message });
-            console.log('signalingChannel error', evt);
-        };
+        signalingChannel.start(myUserId, token);
         // get a local stream, show it in a self-view and add it to be sent
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => {
