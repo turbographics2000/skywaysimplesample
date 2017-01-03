@@ -257,8 +257,8 @@ signalingChannelOnMessage = message => {
                             browser: 'Chrome'
                         },
                     };
-                    console.log('SOC ANSWER', answer);
-                    addLog({ action: 'SOCKET SEND', data: answer });
+                    console.log('send ANSWER', answer);
+                    addLog({ action: 'SOCKET SEND', type: 'ANSWER', data: answer });
                     signalingChannel.send(JSON.stringify(answer));
                 }).catch(logError);
                 break;
