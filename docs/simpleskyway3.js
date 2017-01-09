@@ -3,6 +3,7 @@ let apiKey = '21b4b0a5-f810-4b30-ac5e-a98b24a1be87';
 let extId = 'ophefhhmblpnpplgcaeihbobllolhpnl';
 let token = Math.random().toString(36).substr(2);
 let pcs = {},
+    selfTypes = {},
     pc, socket, dstId, o2j = JSON.stringify,
     j2o = JSON.parse;
 btnStart.onclick = _ => start(dstId = callTo.value);
