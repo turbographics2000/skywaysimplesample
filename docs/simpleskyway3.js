@@ -65,3 +65,4 @@ function start() {
             remoteView.srcObject = evt.stream;
         }
     }
+}
