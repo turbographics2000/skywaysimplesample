@@ -44,15 +44,18 @@ fetch(`https://skyway.io/${apiKey}/id?ts=${Date.now()}${Math.random()}`)
         socket.onclose = evt => console.log(`socket close: code=${evt.code}`);
     });
 
-function start() {
-    pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.skyway.io:3478' }] });
-    pc.onicecandidate = evt => socket.send(o2j({ type: 'CANDIDATE', cnd: evt.candidate, dst: dstId }));
+function start(peerId) {
+    let pc = pcs[peerId] = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.skyway.io:3478' }] });
+    pc.onicecandidate = evt => socket.send(o2j({ type: 'CANDIDATE', cnd: evt.candidate, dst: peerId }));
     pc.onnegotiationneeded = evt => {
         pc.createOffer()
             .then(offer => pc.setLocalDescription(offer))
-            .then(_ => socket.send(o2j({ type: 'OFFER', ofr: pc.localDescription, dst: dstId, mTypes: selfTypes })))
+            .then(_ => socket.send(o2j({ type: 'OFFER', ofr: pc.localDescription, mTypes: selfTypes, dst: peerId })))
             .catch(e => console.log('create offer error', e));
-    }
+    };
+    pc.oniceconnectionstatechange = evt => {
+        console.log(evt.state);
+    };
     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
         selfTypes[stream.id] = 'media';
         selfView.srcObject = stream;
