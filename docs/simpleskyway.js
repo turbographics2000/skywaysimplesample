@@ -2,7 +2,7 @@ window.RTCPeerConnection = window.RTCPeerConnection = window.webkitRTCPeerConnec
 
 var token = Math.random().toString(36).substr(2);
 var myUserId = ''; //(new MediaStream()).id;
-var apiKey = '894abaae-ca60-4915-8107-d68c98c0aef1';
+var apiKey = '21b4b0a5-f810-4b30-ac5e-a98b24a1be87';
 var configuration = {
     iceServers: [{
         urls: 'stun:stun.skyway.io:3478'
