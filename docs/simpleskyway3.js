@@ -4,6 +4,7 @@ let extId = 'ophefhhmblpnpplgcaeihbobllolhpnl';
 let token = Math.random().toString(36).substr(2);
 let pcs = {},
     selfTypes = {},
+    remoteTypes = {},
     pc, socket, dstId, o2j = JSON.stringify,
     j2o = JSON.parse;
 btnStart.onclick = _ => start(dstId = callTo.value);
@@ -32,6 +33,7 @@ fetch(`https://skyway.io/${apiKey}/id?ts=${Date.now()}${Math.random()}`)
             if (!['OPEN', 'PING'].includes(msg.type) && apiKey && !pc) start(dstId = msg.src);
             msg.ans && pc.setRemoteDescription(new RTCSessionDescription(msg.ans));
             msg.ofr && pc.setRemoteDescription(new RTCSessionDescription(msg.ofr))
+                .then(_ => Object.assign(remoteTypes, msg.mTypes))
                 .then(_ => pc.createAnswer())
                 .then(answer => pc.setLocalDescription(answer))
                 .then(_ => socket.send(o2j({ type: 'ANSWER', ans: pc.localDescription, dst: msg.src })))
@@ -48,12 +50,18 @@ function start() {
     pc.onnegotiationneeded = evt => {
         pc.createOffer()
             .then(offer => pc.setLocalDescription(offer))
-            .then(_ => socket.send(o2j({ type: 'OFFER', ofr: pc.localDescription, dst: dstId })))
+            .then(_ => socket.send(o2j({ type: 'OFFER', ofr: pc.localDescription, dst: dstId, mTypes: selfTypes })))
             .catch(e => console.log('create offer error', e));
     }
     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+        selfTypes[stream.id] = 'media';
         selfView.srcObject = stream;
         pc.addTrack ? stream.getTracks().map(trk => pc.addTrack(trk, stream)) : pc.addStream(stream);
     }).catch(e => console.log(`${e.name}: ${e.message}`));
-    pc.onaddstream = evt => remoteView.srcObject = evt.stream;
-}
+    pc.onaddstream = evt => {
+        if (remoteTypes[evt.stream.id] === 'screen') {
+            remoteScreen.srcObject = evt.stream;
+        } else {
+            remoteView.srcObject = evt.stream;
+        }
+    }
